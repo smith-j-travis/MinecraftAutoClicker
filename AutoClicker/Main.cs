@@ -15,6 +15,15 @@ namespace AutoClicker
         public static extern IntPtr PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
+        public static extern IntPtr PostMessage(IntPtr hWnd, uint msg, int wParam, int lParam);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, int wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, int lParam);
+
+        [DllImport("user32.dll")]
         public static extern bool SetForegroundWindow(IntPtr hWnd); 
 
         [DllImport("user32.dll")]
@@ -26,8 +35,6 @@ namespace AutoClicker
         private const int VkEsc = 0x1B;
         private const int WmLbuttonDown = 0x201;
         private const int WmRbuttonDown = 0x0204;
-
-        private const int click = 0x00000001;
 
         private bool _stop;
 
@@ -70,7 +77,12 @@ namespace AutoClicker
             FocusToggle(this.Handle);
         }
 
-        private void Fish(Process mcProcess, IntPtr mainWindowHandle, uint buttonCode, int delay)
+        private int MakeLParam(int LoWord, int HiWord)
+        {
+            return ((HiWord << 16) | (LoWord & 0xffff));
+        }
+
+        private void Fish(Process mcProcess, IntPtr mainWindowHandle, uint buttonCode, int delay, bool miningMode = true)
         {
             SetControlPropertyThreadSafe(this.btn_start, "Text", @"Running...");
             SetControlPropertyThreadSafe(this.btn_start, "Enabled", false);
@@ -84,21 +96,40 @@ namespace AutoClicker
             FocusToggle(mainWindowHandle);
 
             var millisecondsPassed = -1;
+            if (miningMode)
+            {
+                Thread.Sleep(1000);
+                PostMessage(handle, 0x0200, (IntPtr)buttonCode, (IntPtr)1); // 1 = htclient, 200 = mousemove
+                PostMessage(handle, 0x0021, (IntPtr)handle, (IntPtr)(1 | (0x0201 << 16))); //21 = mouseactivate
+                //PostMessage(handle, 0x0020, handle, (IntPtr)MakeLParam(1, 0x201)); // 1 = htclient, 201 = mousemove
+                PostMessage(handle, buttonCode, (IntPtr)0x0001, IntPtr.Zero); // send left button down
+                //PostMessage(handle, 0x0020, handle, (IntPtr)MakeLParam(1, 0x201));
+            }
+
             while (!this._stop)
             {
-                if (millisecondsPassed == -1 || millisecondsPassed > delay)
+                if (millisecondsPassed == -1 || millisecondsPassed >= delay)
                 {
                     millisecondsPassed = 0;
-
-                    PostMessage(handle, buttonCode, (IntPtr)click, IntPtr.Zero);
-                    PostMessage(handle, buttonCode + 1, (IntPtr)click, IntPtr.Zero);
+                    if (miningMode)
+                    {
+                        //PostMessage(handle, 0x0020, IntPtr.Zero, (IntPtr)lParam);
+                    }
+                    else
+                    {
+                        PostMessage(handle, buttonCode, IntPtr.Zero, IntPtr.Zero);
+                        PostMessage(handle, buttonCode + 1, IntPtr.Zero, IntPtr.Zero);
+                    }
                 }
 
                 // sleep only 25 ms and do the check above so if the user clicks
                 // "STOP" with a like 60 second delay, they don't have to wait 60 seconds
-                Thread.Sleep(25);
-                millisecondsPassed += 25;
+                Thread.Sleep(5);
+                millisecondsPassed += 5;
             }
+
+            PostMessage(handle, buttonCode, IntPtr.Zero, IntPtr.Zero);
+            PostMessage(handle, buttonCode + 1, IntPtr.Zero, IntPtr.Zero);
 
             SetControlPropertyThreadSafe(this.btn_start, "Text", @"START!");
             SetControlPropertyThreadSafe(this.btn_start, "Enabled", true);
