@@ -4,4 +4,4 @@ Minecraft Auto Clicker
 * Must be done with Minecraft closed
 
 To access your .minecraft folder, open explorer and paste this into the address bar:
-* %appdata%\.minecraft
+* %appdata%\\.minecraft
