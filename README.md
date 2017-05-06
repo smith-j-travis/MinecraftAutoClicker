@@ -8,6 +8,8 @@ To access your .minecraft folder, open explorer and paste this into the address 
 
 To Use:
 
-Simply do the action you want to repeat once and then bring up the menu. Then click "Start" in the application!
+Simply do the action you want to repeat once and then bring up the menu. Go into the application and click "Start".
 
-When you want to stop, click "Stop" and it will stop the action and bring the menu up again.
+Once you click start, you will have 3 seconds to go into the game and exit the menu. When the countdown hits 0, the program will run and will auto tab you out of the game.
+
+When you want to stop, click "Stop" and it will stop the action.

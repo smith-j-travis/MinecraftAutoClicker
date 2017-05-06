@@ -20,14 +20,8 @@ namespace AutoClicker
         [DllImport("user32.dll")]
         internal static extern bool ShowWindow(IntPtr hWnd, int nCmdShow); //ShowWindow needs an IntPtr
 
-        private const uint WmKeydown = 0x100;
-        private const uint WmKeyup = 0x0101;
-
-        private const int VkEsc = 0x1B;
         private const int WmLbuttonDown = 0x201;
         private const int WmRbuttonDown = 0x0204;
-
-        private const int click = 0x00000001;
 
         private bool _stop;
 
@@ -37,7 +31,7 @@ namespace AutoClicker
         }
         
 
-        private void btn_fish_Click(object sender, EventArgs e)
+        private void btn_action_Click(object sender, EventArgs e)
         {
             var mcProcess = Process.GetProcessesByName("javaw").FirstOrDefault();
             var mainHandle = this.Handle;
@@ -61,8 +55,7 @@ namespace AutoClicker
             this.lblstart_time.Text = DateTime.Now.ToString("MMMM dd HH:mm tt");
 
             var thread = new BackgroundWorker();
-            thread.DoWork += delegate { Fish(mcProcess, mainHandle, (uint)buttonCode, delay); };
-            thread.RunWorkerCompleted += delegate { StopFish(mcProcess); };
+            thread.DoWork += delegate { StartClick(mcProcess, mainHandle, (uint)buttonCode, delay, this.chkHold.Checked); };
             thread.RunWorkerAsync();
 
             Thread.Sleep(200);
@@ -70,48 +63,54 @@ namespace AutoClicker
             FocusToggle(this.Handle);
         }
 
-        private void Fish(Process mcProcess, IntPtr mainWindowHandle, uint buttonCode, int delay)
+        private void StartClick(Process mcProcess, IntPtr mainWindowHandle, uint buttonCode, int delay, bool miningMode)
         {
-            SetControlPropertyThreadSafe(this.btn_start, "Text", @"Running...");
             SetControlPropertyThreadSafe(this.btn_start, "Enabled", false);
             SetControlPropertyThreadSafe(this.btn_stop, "Enabled", true);
 
             var handle = mcProcess.MainWindowHandle;
-            PostMessage(handle, WmKeydown, (IntPtr)VkEsc, IntPtr.Zero);
-            PostMessage(handle, WmKeyup, (IntPtr)VkEsc, IntPtr.Zero);
-
             FocusToggle(mcProcess.MainWindowHandle);
+
+            SetControlPropertyThreadSafe(this.btn_start, "Text", @"Starting in: ");
+            Thread.Sleep(500);
+
+            for (var i = 5; i > 0; i--)
+            {
+                SetControlPropertyThreadSafe(this.btn_start, "Text", i.ToString());
+                Thread.Sleep(500);
+            }
+
             FocusToggle(mainWindowHandle);
+            SetControlPropertyThreadSafe(this.btn_start, "Text", @"Running...");
+            Thread.Sleep(500);
 
             var millisecondsPassed = -1;
+            if (miningMode)
+                PostMessage(handle, (uint)buttonCode, (IntPtr)0x0001, IntPtr.Zero); // send left button down
+
             while (!this._stop)
             {
-                if (millisecondsPassed == -1 || millisecondsPassed > delay)
+                if (millisecondsPassed == -1 || millisecondsPassed >= delay)
                 {
                     millisecondsPassed = 0;
-
-                    PostMessage(handle, buttonCode, (IntPtr)click, IntPtr.Zero);
-                    PostMessage(handle, buttonCode + 1, (IntPtr)click, IntPtr.Zero);
+                    if (!miningMode)
+                    {
+                        PostMessage(handle, buttonCode, IntPtr.Zero, IntPtr.Zero);
+                        PostMessage(handle, buttonCode + 1, IntPtr.Zero, IntPtr.Zero);
+                    }
                 }
 
                 // sleep only 25 ms and do the check above so if the user clicks
                 // "STOP" with a like 60 second delay, they don't have to wait 60 seconds
-                Thread.Sleep(25);
-                millisecondsPassed += 25;
+                Thread.Sleep(5);
+                millisecondsPassed += 5;
             }
+
+            PostMessage(handle, buttonCode, IntPtr.Zero, IntPtr.Zero);
+            PostMessage(handle, buttonCode + 1, IntPtr.Zero, IntPtr.Zero);
 
             SetControlPropertyThreadSafe(this.btn_start, "Text", @"START!");
             SetControlPropertyThreadSafe(this.btn_start, "Enabled", true);
-        }
-
-        private static void StopFish(Process mcProcess)
-        {
-            ShowWindow(mcProcess.MainWindowHandle, 1); // 1 = show normal: http://www.pinvoke.net/default.aspx/user32.showwindow
-            FocusToggle(mcProcess.MainWindowHandle);
-
-            // bring up menu
-            PostMessage(mcProcess.MainWindowHandle, WmKeydown, (IntPtr)VkEsc, IntPtr.Zero);
-            PostMessage(mcProcess.MainWindowHandle, WmKeyup, (IntPtr)VkEsc, IntPtr.Zero);
         }
 
         private void btn_stop_Click(object sender, EventArgs e)
