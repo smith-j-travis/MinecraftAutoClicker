@@ -55,8 +55,7 @@ namespace AutoClicker
             this.lblstart_time.Text = DateTime.Now.ToString("MMMM dd HH:mm tt");
 
             var thread = new BackgroundWorker();
-            thread.DoWork += delegate { StartClick(mcProcess, mainHandle, (uint)buttonCode, delay); };
-            thread.RunWorkerCompleted += delegate { StopAction(mcProcess); };
+            thread.DoWork += delegate { StartClick(mcProcess, mainHandle, (uint)buttonCode, delay, this.chkHold.Checked); };
             thread.RunWorkerAsync();
 
             Thread.Sleep(200);
@@ -64,7 +63,7 @@ namespace AutoClicker
             FocusToggle(this.Handle);
         }
 
-        private void StartClick(Process mcProcess, IntPtr mainWindowHandle, uint buttonCode, int delay, bool miningMode = true)
+        private void StartClick(Process mcProcess, IntPtr mainWindowHandle, uint buttonCode, int delay, bool miningMode)
         {
             SetControlPropertyThreadSafe(this.btn_start, "Enabled", false);
             SetControlPropertyThreadSafe(this.btn_stop, "Enabled", true);
@@ -112,12 +111,6 @@ namespace AutoClicker
 
             SetControlPropertyThreadSafe(this.btn_start, "Text", @"START!");
             SetControlPropertyThreadSafe(this.btn_start, "Enabled", true);
-        }
-
-        private static void StopAction(Process mcProcess)
-        {
-            ShowWindow(mcProcess.MainWindowHandle, 1); // 1 = show normal: http://www.pinvoke.net/default.aspx/user32.showwindow
-            FocusToggle(mcProcess.MainWindowHandle);
         }
 
         private void btn_stop_Click(object sender, EventArgs e)

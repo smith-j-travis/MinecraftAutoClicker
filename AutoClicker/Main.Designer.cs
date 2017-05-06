@@ -36,11 +36,12 @@
             this.txtDelay = new System.Windows.Forms.TextBox();
             this.rdio_RightClick = new System.Windows.Forms.RadioButton();
             this.rdio_LeftClick = new System.Windows.Forms.RadioButton();
+            this.chkHold = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btn_start
             // 
-            this.btn_start.Location = new System.Drawing.Point(140, 106);
+            this.btn_start.Location = new System.Drawing.Point(143, 133);
             this.btn_start.Name = "btn_start";
             this.btn_start.Size = new System.Drawing.Size(88, 51);
             this.btn_start.TabIndex = 0;
@@ -68,7 +69,7 @@
             // btn_stop
             // 
             this.btn_stop.Enabled = false;
-            this.btn_stop.Location = new System.Drawing.Point(41, 106);
+            this.btn_stop.Location = new System.Drawing.Point(44, 133);
             this.btn_stop.Name = "btn_stop";
             this.btn_stop.Size = new System.Drawing.Size(88, 51);
             this.btn_stop.TabIndex = 3;
@@ -115,11 +116,22 @@
             this.rdio_LeftClick.Text = "Left Click";
             this.rdio_LeftClick.UseVisualStyleBackColor = true;
             // 
+            // chkHold
+            // 
+            this.chkHold.AutoSize = true;
+            this.chkHold.Location = new System.Drawing.Point(27, 104);
+            this.chkHold.Name = "chkHold";
+            this.chkHold.Size = new System.Drawing.Size(224, 19);
+            this.chkHold.TabIndex = 8;
+            this.chkHold.Text = "Hold Click Button Down (For Mining)";
+            this.chkHold.UseVisualStyleBackColor = true;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(263, 170);
+            this.ClientSize = new System.Drawing.Size(263, 196);
+            this.Controls.Add(this.chkHold);
             this.Controls.Add(this.rdio_LeftClick);
             this.Controls.Add(this.rdio_RightClick);
             this.Controls.Add(this.txtDelay);
@@ -148,6 +160,7 @@
         private System.Windows.Forms.TextBox txtDelay;
         private System.Windows.Forms.RadioButton rdio_RightClick;
         private System.Windows.Forms.RadioButton rdio_LeftClick;
+        private System.Windows.Forms.CheckBox chkHold;
     }
 }
 
