@@ -15,24 +15,11 @@ namespace AutoClicker
         public static extern IntPtr PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr PostMessage(IntPtr hWnd, uint msg, int wParam, int lParam);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, int wParam, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr wParam, int lParam);
-
-        [DllImport("user32.dll")]
         public static extern bool SetForegroundWindow(IntPtr hWnd); 
 
         [DllImport("user32.dll")]
         internal static extern bool ShowWindow(IntPtr hWnd, int nCmdShow); //ShowWindow needs an IntPtr
 
-        private const uint WmKeydown = 0x100;
-        private const uint WmKeyup = 0x0101;
-
-        private const int VkEsc = 0x1B;
         private const int WmLbuttonDown = 0x201;
         private const int WmRbuttonDown = 0x0204;
 
@@ -44,7 +31,7 @@ namespace AutoClicker
         }
         
 
-        private void btn_fish_Click(object sender, EventArgs e)
+        private void btn_action_Click(object sender, EventArgs e)
         {
             var mcProcess = Process.GetProcessesByName("javaw").FirstOrDefault();
             var mainHandle = this.Handle;
@@ -68,8 +55,8 @@ namespace AutoClicker
             this.lblstart_time.Text = DateTime.Now.ToString("MMMM dd HH:mm tt");
 
             var thread = new BackgroundWorker();
-            thread.DoWork += delegate { Fish(mcProcess, mainHandle, (uint)buttonCode, delay); };
-            thread.RunWorkerCompleted += delegate { StopFish(mcProcess); };
+            thread.DoWork += delegate { StartClick(mcProcess, mainHandle, (uint)buttonCode, delay); };
+            thread.RunWorkerCompleted += delegate { StopAction(mcProcess); };
             thread.RunWorkerAsync();
 
             Thread.Sleep(200);
@@ -77,45 +64,37 @@ namespace AutoClicker
             FocusToggle(this.Handle);
         }
 
-        private int MakeLParam(int LoWord, int HiWord)
+        private void StartClick(Process mcProcess, IntPtr mainWindowHandle, uint buttonCode, int delay, bool miningMode = true)
         {
-            return ((HiWord << 16) | (LoWord & 0xffff));
-        }
-
-        private void Fish(Process mcProcess, IntPtr mainWindowHandle, uint buttonCode, int delay, bool miningMode = true)
-        {
-            SetControlPropertyThreadSafe(this.btn_start, "Text", @"Running...");
             SetControlPropertyThreadSafe(this.btn_start, "Enabled", false);
             SetControlPropertyThreadSafe(this.btn_stop, "Enabled", true);
 
             var handle = mcProcess.MainWindowHandle;
-            PostMessage(handle, WmKeydown, (IntPtr)VkEsc, IntPtr.Zero);
-            PostMessage(handle, WmKeyup, (IntPtr)VkEsc, IntPtr.Zero);
-
             FocusToggle(mcProcess.MainWindowHandle);
+
+            SetControlPropertyThreadSafe(this.btn_start, "Text", @"Starting in: ");
+            Thread.Sleep(500);
+
+            for (var i = 5; i > 0; i--)
+            {
+                SetControlPropertyThreadSafe(this.btn_start, "Text", i.ToString());
+                Thread.Sleep(500);
+            }
+
             FocusToggle(mainWindowHandle);
+            SetControlPropertyThreadSafe(this.btn_start, "Text", @"Running...");
+            Thread.Sleep(500);
 
             var millisecondsPassed = -1;
             if (miningMode)
-            {
-                Thread.Sleep(1000);
-                PostMessage(handle, 0x0200, (IntPtr)buttonCode, (IntPtr)1); // 1 = htclient, 200 = mousemove
-                PostMessage(handle, 0x0021, (IntPtr)handle, (IntPtr)(1 | (0x0201 << 16))); //21 = mouseactivate
-                //PostMessage(handle, 0x0020, handle, (IntPtr)MakeLParam(1, 0x201)); // 1 = htclient, 201 = mousemove
-                PostMessage(handle, buttonCode, (IntPtr)0x0001, IntPtr.Zero); // send left button down
-                //PostMessage(handle, 0x0020, handle, (IntPtr)MakeLParam(1, 0x201));
-            }
+                PostMessage(handle, (uint)buttonCode, (IntPtr)0x0001, IntPtr.Zero); // send left button down
 
             while (!this._stop)
             {
                 if (millisecondsPassed == -1 || millisecondsPassed >= delay)
                 {
                     millisecondsPassed = 0;
-                    if (miningMode)
-                    {
-                        //PostMessage(handle, 0x0020, IntPtr.Zero, (IntPtr)lParam);
-                    }
-                    else
+                    if (!miningMode)
                     {
                         PostMessage(handle, buttonCode, IntPtr.Zero, IntPtr.Zero);
                         PostMessage(handle, buttonCode + 1, IntPtr.Zero, IntPtr.Zero);
@@ -135,14 +114,10 @@ namespace AutoClicker
             SetControlPropertyThreadSafe(this.btn_start, "Enabled", true);
         }
 
-        private static void StopFish(Process mcProcess)
+        private static void StopAction(Process mcProcess)
         {
             ShowWindow(mcProcess.MainWindowHandle, 1); // 1 = show normal: http://www.pinvoke.net/default.aspx/user32.showwindow
             FocusToggle(mcProcess.MainWindowHandle);
-
-            // bring up menu
-            PostMessage(mcProcess.MainWindowHandle, WmKeydown, (IntPtr)VkEsc, IntPtr.Zero);
-            PostMessage(mcProcess.MainWindowHandle, WmKeyup, (IntPtr)VkEsc, IntPtr.Zero);
         }
 
         private void btn_stop_Click(object sender, EventArgs e)
