@@ -10,7 +10,7 @@ namespace AutoClicker
 {
     public partial class MultipleInstances : Form
     {
-        public List<int> SelectedInstances { get; private set; }
+        public List<int> SelectedInstances { get; }
 
         public MultipleInstances(IEnumerable<Process> foundProcesses)
         {
@@ -33,7 +33,7 @@ namespace AutoClicker
 
                 var button = new Button
                 {
-                    Text = "Focus",
+                    Text = @"Focus",
                     Location = new Point(buttonX, y)
                 };
 
@@ -46,13 +46,13 @@ namespace AutoClicker
             }
         }
 
-        private void btn_ok_Click(object sender, EventArgs e)
+        private void Btn_ok_Click(object sender, EventArgs e)
         {
             var selectedInstances = this.grpInstances.AllControls<ValueCheckBox>().Where(b => b.Checked).ToList();
 
             if (!selectedInstances.Any())
             {
-                MessageBox.Show("You must select at least one instance!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"You must select at least one instance!", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -17,18 +16,17 @@ namespace AutoClicker
         {
             InitializeComponent();
         }
-        
 
-        private void btn_action_Click(object sender, EventArgs e)
+        private void Btn_action_Click(object sender, EventArgs e)
         {
             var mcProcesses = Process.GetProcessesByName("javaw").Where(b => b.MainWindowTitle.Contains("Minecraft")).ToList();
 
             var mainHandle = this.Handle;
-            int delay;
 
-            if (!int.TryParse(this.txtDelay.Text, out delay))
+            if (!int.TryParse(this.txtDelay.Text, out int delay))
             {
-                MessageBox.Show(@"The delay must be an integer!", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"The delay must be an integer! Resetting to default.", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.txtDelay.Text = @"300";
                 return;
             }
 
@@ -115,7 +113,7 @@ namespace AutoClicker
             SetControlPropertyThreadSafe(this.btn_start, "Enabled", true);
         }
 
-        private void btn_stop_Click(object sender, EventArgs e)
+        private void Btn_stop_Click(object sender, EventArgs e)
         {
             this._stop = true;
             this.btn_stop.Enabled = false;
