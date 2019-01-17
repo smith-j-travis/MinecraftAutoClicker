@@ -20,6 +20,7 @@ namespace AutoClicker
             const int x = 25;
             var y = 20;
             var buttonX = this.grpInstances.Location.X + this.grpInstances.Width - 100;
+            var processCount = 0;
 
             foreach (var process in foundProcesses)
             {
@@ -43,6 +44,8 @@ namespace AutoClicker
                 this.grpInstances.Controls.Add(button);
 
                 y += 25;
+                processCount++;
+                AdjustForm(processCount);
             }
         }
 
@@ -61,6 +64,17 @@ namespace AutoClicker
 
             this.DialogResult = DialogResult.OK;
             this.Close();
+        }
+
+        private void AdjustForm(int processCount)
+        {
+            if (processCount > 4)
+            {
+                this.grpInstances.Height += 25;
+                this.Height += 25;
+                this.btn_cancel.Location = new Point(this.btn_cancel.Location.X, this.btn_cancel.Location.Y + 25);
+                this.btn_ok.Location = new Point(this.btn_ok.Location.X, this.btn_ok.Location.Y + 25);
+            }
         }
     }
 }
