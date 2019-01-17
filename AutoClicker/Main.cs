@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -11,56 +10,57 @@ namespace AutoClicker
 {
     public partial class Main : Form
     {
-        [DllImport("user32.dll")]
-        public static extern IntPtr PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd); 
-
-        [DllImport("user32.dll")]
-        internal static extern bool ShowWindow(IntPtr hWnd, int nCmdShow); //ShowWindow needs an IntPtr
-
-        private const int WmLbuttonDown = 0x201;
-        private const int WmRbuttonDown = 0x0204;
-
         private bool _stop;
 
         public Main()
         {
             InitializeComponent();
         }
-        
 
-        private void btn_action_Click(object sender, EventArgs e)
+        private void Btn_action_Click(object sender, EventArgs e)
         {
-            var mcProcess = Process.GetProcessesByName("javaw").FirstOrDefault();
-            var mainHandle = this.Handle;
-            int delay;
+            var mcProcesses = Process.GetProcessesByName("javaw").Where(b => b.MainWindowTitle.Contains("Minecraft")).ToList();
 
-            if (!int.TryParse(this.txtDelay.Text, out delay))
+            var mainHandle = this.Handle;
+
+            if (!int.TryParse(this.txtDelay.Text, out int delay))
             {
-                MessageBox.Show(@"The delay must be an integer!", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"The delay must be an integer! Resetting to default.", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.txtDelay.Text = @"300";
                 return;
             }
 
-            if (mcProcess == null || !mcProcess.MainWindowTitle.Contains("Minecraft"))
+            if (!mcProcesses.Any())
             {
                 MessageBox.Show(@"Minecraft not running!", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            var buttonCode = rdio_RightClick.Checked ? WmRbuttonDown : WmLbuttonDown;
+            if (mcProcesses.Count > 1)
+            {
+                var instancesForm = new MultipleInstances(mcProcesses);
+
+                if (instancesForm.ShowDialog() != DialogResult.OK)
+                    return;
+
+                mcProcesses = instancesForm.SelectedInstances.Select(Process.GetProcessById).ToList();
+            }
+
+            var buttonCode = rdio_RightClick.Checked ? Win32Api.WmRbuttonDown : Win32Api.WmLbuttonDown;
 
             this._stop = false;
             this.lblstart_time.Text = DateTime.Now.ToString("MMMM dd HH:mm tt");
 
-            var thread = new BackgroundWorker();
-            thread.DoWork += delegate { StartClick(mcProcess, mainHandle, (uint)buttonCode, delay, this.chkHold.Checked); };
-            thread.RunWorkerAsync();
+            foreach (var mcProcess in mcProcesses)
+            {
+                var thread = new BackgroundWorker();
+                thread.DoWork += delegate { StartClick(mcProcess, mainHandle, (uint)buttonCode, delay, this.chkHold.Checked); };
+                thread.RunWorkerAsync();
 
-            Thread.Sleep(200);
-            FocusToggle(mcProcess.MainWindowHandle);
-            FocusToggle(this.Handle);
+                Thread.Sleep(200);
+                FocusToggle(mcProcess.MainWindowHandle);
+                FocusToggle(this.Handle);
+            }
         }
 
         private void StartClick(Process mcProcess, IntPtr mainWindowHandle, uint buttonCode, int delay, bool miningMode)
@@ -86,7 +86,7 @@ namespace AutoClicker
 
             var millisecondsPassed = -1;
             if (miningMode)
-                PostMessage(handle, (uint)buttonCode, (IntPtr)0x0001, IntPtr.Zero); // send left button down
+                Win32Api.PostMessage(handle, (uint)buttonCode, (IntPtr)0x0001, IntPtr.Zero); // send left button down
 
             while (!this._stop)
             {
@@ -95,8 +95,8 @@ namespace AutoClicker
                     millisecondsPassed = 0;
                     if (!miningMode)
                     {
-                        PostMessage(handle, buttonCode, IntPtr.Zero, IntPtr.Zero);
-                        PostMessage(handle, buttonCode + 1, IntPtr.Zero, IntPtr.Zero);
+                        Win32Api.PostMessage(handle, buttonCode, IntPtr.Zero, IntPtr.Zero);
+                        Win32Api.PostMessage(handle, buttonCode + 1, IntPtr.Zero, IntPtr.Zero);
                     }
                 }
 
@@ -106,14 +106,14 @@ namespace AutoClicker
                 millisecondsPassed += 5;
             }
 
-            PostMessage(handle, buttonCode, IntPtr.Zero, IntPtr.Zero);
-            PostMessage(handle, buttonCode + 1, IntPtr.Zero, IntPtr.Zero);
+            Win32Api.PostMessage(handle, buttonCode, IntPtr.Zero, IntPtr.Zero);
+            Win32Api.PostMessage(handle, buttonCode + 1, IntPtr.Zero, IntPtr.Zero);
 
             SetControlPropertyThreadSafe(this.btn_start, "Text", @"START!");
             SetControlPropertyThreadSafe(this.btn_start, "Enabled", true);
         }
 
-        private void btn_stop_Click(object sender, EventArgs e)
+        private void Btn_stop_Click(object sender, EventArgs e)
         {
             this._stop = true;
             this.btn_stop.Enabled = false;
@@ -122,7 +122,7 @@ namespace AutoClicker
         private static void FocusToggle(IntPtr hwnd)
         {
             Thread.Sleep(200);
-            SetForegroundWindow(hwnd);
+            Win32Api.SetForegroundWindow(hwnd);
         }
 
         private delegate void SetControlPropertyThreadSafeDelegate(Control control, string propertyName, object propertyValue);

@@ -47,7 +47,7 @@
             this.btn_start.TabIndex = 0;
             this.btn_start.Text = "START!";
             this.btn_start.UseVisualStyleBackColor = true;
-            this.btn_start.Click += new System.EventHandler(this.btn_action_Click);
+            this.btn_start.Click += new System.EventHandler(this.Btn_action_Click);
             // 
             // lbl_startText
             // 
@@ -75,7 +75,7 @@
             this.btn_stop.TabIndex = 3;
             this.btn_stop.Text = "STOP!";
             this.btn_stop.UseVisualStyleBackColor = true;
-            this.btn_stop.Click += new System.EventHandler(this.btn_stop_Click);
+            this.btn_stop.Click += new System.EventHandler(this.Btn_stop_Click);
             // 
             // lbl_delay
             // 
