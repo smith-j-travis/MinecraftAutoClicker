@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace AutoClicker
 {
     public partial class Main : Form
     {
-        private bool _stop;
+        private Dictionary<Process, List<Clicker>> instanceClickers = new Dictionary<Process, List<Clicker>>();
 
         public Main()
         {
@@ -21,12 +22,14 @@ namespace AutoClicker
 
         private void Btn_action_Click(object sender, EventArgs e)
         {
+            EnableElements(false);
             var mcProcesses = Process.GetProcessesByName("javaw").Where(b => b.MainWindowTitle.Contains("Minecraft")).ToList();
-            var mainHandle = this.Handle;
+            var mainHandle = Handle;
 
             if (!mcProcesses.Any())
             {
                 MessageBox.Show(@"Minecraft is not running!", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                EnableElements(true);
                 return;
             }
 
@@ -39,75 +42,83 @@ namespace AutoClicker
 
                 mcProcesses = instancesForm.SelectedInstances.Select(Process.GetProcessById).ToList();
             }
-            // -------------------------------------------------------------------------
 
-            this._stop = false;
             this.lblstart_time.Text = DateTime.Now.ToString("MMMM dd HH:mm tt");
 
             foreach (var mcProcess in mcProcesses)
             {
-                
+                SetControlPropertyThreadSafe(this.btn_start, "Enabled", false);
+                SetControlPropertyThreadSafe(this.btn_stop, "Enabled", true);
+
+                var minecraftHandle = mcProcess.MainWindowHandle;
+                FocusToggle(minecraftHandle);
+
+                SetControlPropertyThreadSafe(this.btn_start, "Text", @"Starting in: ");
+                Thread.Sleep(500);
+
+                for (var i = 5; i > 0; i--)
+                {
+                    SetControlPropertyThreadSafe(this.btn_start, "Text", i.ToString());
+                    Thread.Sleep(500);
+                }
+
+                FocusToggle(mainHandle);
+                SetControlPropertyThreadSafe(this.btn_start, "Text", @"Running...");
+                Thread.Sleep(500);
+
+                if(biLeftMouse.Needed)
+                {
+                    var clicker = biLeftMouse.StartClicking(minecraftHandle);
+                    AddToInstanceClickers(mcProcess, clicker);
+                }
+
+                if(biRightMouse.Needed)
+                {
+                    var clicker = biRightMouse.StartClicking(minecraftHandle);
+                    AddToInstanceClickers(mcProcess, clicker);
+                }
 
                 Thread.Sleep(200);
-                FocusToggle(mcProcess.MainWindowHandle);
-                FocusToggle(this.Handle);
+                FocusToggle(minecraftHandle);
+                FocusToggle(mainHandle);
             }
         }
 
-        private void StartClick(Process mcProcess, IntPtr mainWindowHandle, uint buttonCode, int delay, bool miningMode)
+        private void AddToInstanceClickers(Process mcProcess, Clicker clicker)
         {
-            SetControlPropertyThreadSafe(this.btn_start, "Enabled", false);
-            SetControlPropertyThreadSafe(this.btn_stop, "Enabled", true);
-
-            var handle = mcProcess.MainWindowHandle;
-            FocusToggle(mcProcess.MainWindowHandle);
-
-            SetControlPropertyThreadSafe(this.btn_start, "Text", @"Starting in: ");
-            Thread.Sleep(500);
-
-            for (var i = 5; i > 0; i--)
+            if(instanceClickers.ContainsKey(mcProcess))
             {
-                SetControlPropertyThreadSafe(this.btn_start, "Text", i.ToString());
-                Thread.Sleep(500);
+                instanceClickers[mcProcess].Add(clicker);
             }
-
-            FocusToggle(mainWindowHandle);
-            SetControlPropertyThreadSafe(this.btn_start, "Text", @"Running...");
-            Thread.Sleep(500);
-
-            var millisecondsPassed = -1;
-            if (miningMode)
-                Win32Api.PostMessage(handle, (uint)buttonCode, (IntPtr)0x0001, IntPtr.Zero); // send left button down
-
-            while (!this._stop)
+            else
             {
-                if (millisecondsPassed == -1 || millisecondsPassed >= delay)
-                {
-                    millisecondsPassed = 0;
-                    if (!miningMode)
-                    {
-                        Win32Api.PostMessage(handle, buttonCode, IntPtr.Zero, IntPtr.Zero);
-                        Win32Api.PostMessage(handle, buttonCode + 1, IntPtr.Zero, IntPtr.Zero);
-                    }
-                }
-
-                // sleep only 25 ms and do the check above so if the user clicks
-                // "STOP" with a like 60 second delay, they don't have to wait 60 seconds
-                Thread.Sleep(5);
-                millisecondsPassed += 5;
+                instanceClickers.Add(mcProcess, new List<Clicker>() { clicker });
             }
-
-            Win32Api.PostMessage(handle, buttonCode, IntPtr.Zero, IntPtr.Zero);
-            Win32Api.PostMessage(handle, buttonCode + 1, IntPtr.Zero, IntPtr.Zero);
-
-            SetControlPropertyThreadSafe(this.btn_start, "Text", @"START!");
-            SetControlPropertyThreadSafe(this.btn_start, "Enabled", true);
         }
 
         private void Btn_stop_Click(object sender, EventArgs e)
         {
-            this._stop = true;
             this.btn_stop.Enabled = false;
+
+            foreach(var clickers in instanceClickers.Values)
+            {
+                foreach(var clicker in clickers)
+                {
+                    clicker.Dispose();
+                }
+            }
+            instanceClickers.Clear();
+
+            btn_start.Text = "START";
+            EnableElements(true);
+        }
+
+        private void EnableElements(bool enable)
+        {
+            btn_start.Enabled = enable;
+            biLeftMouse.Enabled = enable;
+            biRightMouse.Enabled = enable;
+            btn_stop.Enabled = !enable;
         }
 
         private static void FocusToggle(IntPtr hwnd)

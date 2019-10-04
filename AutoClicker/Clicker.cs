@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace AutoClicker
@@ -8,47 +7,38 @@ namespace AutoClicker
     {
         private readonly uint buttonDownCode;
         private readonly uint buttonUpCode;
-        private ICollection<IntPtr> minecraftHandles = null;
+        private readonly IntPtr minecraftHandle;
         private readonly Timer timer;
 
         private bool hold = false;
 
-        public Clicker(uint buttonDownCode, uint buttonUpCode)
+        public Clicker(uint buttonDownCode, uint buttonUpCode, IntPtr minecraftHandle)
         {
             this.buttonDownCode = buttonDownCode;
             this.buttonUpCode = buttonUpCode;
+            this.minecraftHandle = minecraftHandle;
 
             timer = new Timer();
             timer.Tick += Timer_Tick;
         }
-        
+
         private void Timer_Tick(object sender, EventArgs e)
         {
-            ToAllHandle((IntPtr handle) =>
-            {
-                Win32Api.PostMessage(handle, buttonDownCode, IntPtr.Zero, IntPtr.Zero);
-                Win32Api.PostMessage(handle, buttonUpCode, IntPtr.Zero, IntPtr.Zero);
-            });
+            Click();
         }
 
-        public void Start(int delay, ICollection<IntPtr> minecraftHandles)
+        public void Start(int delay)
         {
             Stop();
-
-            if (!(minecraftHandles != null && minecraftHandles.Count != 0))
-            {
-                return;
-            }
-            this.minecraftHandles = minecraftHandles;
-
             hold = (delay == 0);
 
             if (hold)
             {
-                ToAllHandle((IntPtr handle) => Win32Api.PostMessage(handle, buttonDownCode, (IntPtr)0x0001, IntPtr.Zero));
+                Win32Api.PostMessage(minecraftHandle, buttonDownCode, (IntPtr)0x0001, IntPtr.Zero);
             }
             else
             {
+                Click();
                 timer.Interval = delay;
                 timer.Start();
             }
@@ -58,11 +48,12 @@ namespace AutoClicker
         {
             if (hold)
             {
-                ToAllHandle((IntPtr handle) => Win32Api.PostMessage(handle, buttonUpCode, IntPtr.Zero, IntPtr.Zero));
+                Win32Api.PostMessage(minecraftHandle, buttonUpCode, IntPtr.Zero, IntPtr.Zero);
             }
             else
             {
                 timer.Stop();
+                Click();
             }
         }
 
@@ -72,12 +63,10 @@ namespace AutoClicker
             timer.Dispose();
         }
 
-        private void ToAllHandle(Action<IntPtr> todo)
+        private void Click()
         {
-            foreach(var handle in minecraftHandles)
-            {
-                todo(handle);
-            }
+            Win32Api.PostMessage(minecraftHandle, buttonDownCode, IntPtr.Zero, IntPtr.Zero);
+            Win32Api.PostMessage(minecraftHandle, buttonUpCode, IntPtr.Zero, IntPtr.Zero);
         }
     }
 }
