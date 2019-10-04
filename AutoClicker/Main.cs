@@ -15,24 +15,18 @@ namespace AutoClicker
         public Main()
         {
             InitializeComponent();
+            biLeftMouse.Init("Left mouse button", Win32Api.WmLbuttonDown, Win32Api.WmLbuttonDown + 1);
+            biRightMouse.Init("Right mouse button", Win32Api.WmRbuttonDown, Win32Api.WmRbuttonDown + 1);
         }
 
         private void Btn_action_Click(object sender, EventArgs e)
         {
             var mcProcesses = Process.GetProcessesByName("javaw").Where(b => b.MainWindowTitle.Contains("Minecraft")).ToList();
-
             var mainHandle = this.Handle;
-
-            if (!int.TryParse(this.txtDelay.Text, out int delay))
-            {
-                MessageBox.Show(@"The delay must be an integer! Resetting to default.", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.txtDelay.Text = @"300";
-                return;
-            }
 
             if (!mcProcesses.Any())
             {
-                MessageBox.Show(@"Minecraft not running!", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Minecraft is not running!", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -45,17 +39,14 @@ namespace AutoClicker
 
                 mcProcesses = instancesForm.SelectedInstances.Select(Process.GetProcessById).ToList();
             }
-
-            var buttonCode = rdio_RightClick.Checked ? Win32Api.WmRbuttonDown : Win32Api.WmLbuttonDown;
+            // -------------------------------------------------------------------------
 
             this._stop = false;
             this.lblstart_time.Text = DateTime.Now.ToString("MMMM dd HH:mm tt");
 
             foreach (var mcProcess in mcProcesses)
             {
-                var thread = new BackgroundWorker();
-                thread.DoWork += delegate { StartClick(mcProcess, mainHandle, (uint)buttonCode, delay, this.chkHold.Checked); };
-                thread.RunWorkerAsync();
+                
 
                 Thread.Sleep(200);
                 FocusToggle(mcProcess.MainWindowHandle);

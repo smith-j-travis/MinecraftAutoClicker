@@ -1,45 +1,54 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace AutoClicker
 {
     internal class Clicker : IDisposable
     {
-        private readonly uint buttonPressCode;
-        private readonly uint buttonReleaseCode;
-        private readonly IntPtr handle;
+        private readonly uint buttonDownCode;
+        private readonly uint buttonUpCode;
+        private ICollection<IntPtr> minecraftHandles = null;
         private readonly Timer timer;
 
         private bool hold = false;
 
-        public Clicker(uint buttonPressCode, uint buttonReleaseCode, IntPtr handle)
+        public Clicker(uint buttonDownCode, uint buttonUpCode)
         {
-            this.buttonPressCode = buttonPressCode;
-            this.buttonReleaseCode = buttonReleaseCode;
-            this.handle = handle;
+            this.buttonDownCode = buttonDownCode;
+            this.buttonUpCode = buttonUpCode;
 
             timer = new Timer();
             timer.Tick += Timer_Tick;
         }
-
+        
         private void Timer_Tick(object sender, EventArgs e)
         {
-            Win32Api.PostMessage(handle, buttonPressCode, IntPtr.Zero, IntPtr.Zero);
-            Win32Api.PostMessage(handle, buttonReleaseCode, IntPtr.Zero, IntPtr.Zero);
+            ToAllHandle((IntPtr handle) =>
+            {
+                Win32Api.PostMessage(handle, buttonDownCode, IntPtr.Zero, IntPtr.Zero);
+                Win32Api.PostMessage(handle, buttonUpCode, IntPtr.Zero, IntPtr.Zero);
+            });
         }
 
-        public void Start(int delay)
+        public void Start(int delay, ICollection<IntPtr> minecraftHandles)
         {
-            timer.Stop();
+            Stop();
 
-            if (delay == 0)
+            if (!(minecraftHandles != null && minecraftHandles.Count != 0))
             {
-                hold = true;
-                Win32Api.PostMessage(handle, buttonPressCode, IntPtr.Zero, IntPtr.Zero);
+                return;
+            }
+            this.minecraftHandles = minecraftHandles;
+
+            hold = (delay == 0);
+
+            if (hold)
+            {
+                ToAllHandle((IntPtr handle) => Win32Api.PostMessage(handle, buttonDownCode, (IntPtr)0x0001, IntPtr.Zero));
             }
             else
             {
-                hold = false;
                 timer.Interval = delay;
                 timer.Start();
             }
@@ -49,18 +58,26 @@ namespace AutoClicker
         {
             if (hold)
             {
-                Win32Api.PostMessage(handle, buttonReleaseCode, IntPtr.Zero, IntPtr.Zero);
+                ToAllHandle((IntPtr handle) => Win32Api.PostMessage(handle, buttonUpCode, IntPtr.Zero, IntPtr.Zero));
             }
             else
             {
                 timer.Stop();
             }
         }
-        
+
         public void Dispose()
         {
             timer.Stop();
             timer.Dispose();
+        }
+
+        private void ToAllHandle(Action<IntPtr> todo)
+        {
+            foreach(var handle in minecraftHandles)
+            {
+                todo(handle);
+            }
         }
     }
 }

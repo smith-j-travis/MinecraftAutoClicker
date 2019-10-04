@@ -63,11 +63,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UserInput.cs">
+    <Compile Include="ButtonInputs.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UserInput.Designer.cs">
-      <DependentUpon>UserInput.cs</DependentUpon>
+    <Compile Include="ButtonInputs.Designer.cs">
+      <DependentUpon>ButtonInputs.cs</DependentUpon>
     </Compile>
     <Compile Include="Win32Api.cs" />
     <EmbeddedResource Include="Main.resx">
@@ -85,8 +85,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="UserInput.resx">
-      <DependentUpon>UserInput.cs</DependentUpon>
+    <EmbeddedResource Include="ButtonInputs.resx">
+      <DependentUpon>ButtonInputs.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

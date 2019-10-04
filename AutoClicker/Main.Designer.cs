@@ -29,35 +29,21 @@
         private void InitializeComponent()
         {
             this.btn_start = new System.Windows.Forms.Button();
-            this.lbl_startText = new System.Windows.Forms.Label();
             this.lblstart_time = new System.Windows.Forms.Label();
             this.btn_stop = new System.Windows.Forms.Button();
-            this.lbl_delay = new System.Windows.Forms.Label();
-            this.txtDelay = new System.Windows.Forms.TextBox();
-            this.rdio_LeftClick = new System.Windows.Forms.RadioButton();
-            this.rdio_RightClick = new System.Windows.Forms.RadioButton();
-            this.chkHold = new System.Windows.Forms.CheckBox();
-            this.userInput1 = new AutoClicker.UserInput();
+            this.biLeftMouse = new AutoClicker.ButtonInputs();
+            this.biRightMouse = new AutoClicker.ButtonInputs();
             this.SuspendLayout();
             // 
             // btn_start
             // 
-            this.btn_start.Location = new System.Drawing.Point(143, 133);
+            this.btn_start.Location = new System.Drawing.Point(269, 160);
             this.btn_start.Name = "btn_start";
             this.btn_start.Size = new System.Drawing.Size(88, 51);
             this.btn_start.TabIndex = 0;
             this.btn_start.Text = "START!";
             this.btn_start.UseVisualStyleBackColor = true;
             this.btn_start.Click += new System.EventHandler(this.Btn_action_Click);
-            // 
-            // lbl_startText
-            // 
-            this.lbl_startText.AutoSize = true;
-            this.lbl_startText.Location = new System.Drawing.Point(11, 18);
-            this.lbl_startText.Name = "lbl_startText";
-            this.lbl_startText.Size = new System.Drawing.Size(77, 13);
-            this.lbl_startText.TabIndex = 1;
-            this.lbl_startText.Text = "Started Action:";
             // 
             // lblstart_time
             // 
@@ -70,7 +56,7 @@
             // btn_stop
             // 
             this.btn_stop.Enabled = false;
-            this.btn_stop.Location = new System.Drawing.Point(44, 133);
+            this.btn_stop.Location = new System.Drawing.Point(165, 160);
             this.btn_stop.Name = "btn_stop";
             this.btn_stop.Size = new System.Drawing.Size(88, 51);
             this.btn_stop.TabIndex = 3;
@@ -78,77 +64,29 @@
             this.btn_stop.UseVisualStyleBackColor = true;
             this.btn_stop.Click += new System.EventHandler(this.Btn_stop_Click);
             // 
-            // lbl_delay
+            // biLeftMouse
             // 
-            this.lbl_delay.AutoSize = true;
-            this.lbl_delay.Location = new System.Drawing.Point(31, 46);
-            this.lbl_delay.Name = "lbl_delay";
-            this.lbl_delay.Size = new System.Drawing.Size(62, 13);
-            this.lbl_delay.TabIndex = 4;
-            this.lbl_delay.Text = "Delay (ms): ";
+            this.biLeftMouse.Location = new System.Drawing.Point(12, 18);
+            this.biLeftMouse.Name = "biLeftMouse";
+            this.biLeftMouse.Size = new System.Drawing.Size(240, 130);
+            this.biLeftMouse.TabIndex = 4;
             // 
-            // txtDelay
+            // biRightMouse
             // 
-            this.txtDelay.Location = new System.Drawing.Point(109, 43);
-            this.txtDelay.Name = "txtDelay";
-            this.txtDelay.Size = new System.Drawing.Size(70, 20);
-            this.txtDelay.TabIndex = 5;
-            this.txtDelay.Text = "300";
-            // 
-            // rdio_LeftClick
-            // 
-            this.rdio_LeftClick.AutoSize = true;
-            this.rdio_LeftClick.Location = new System.Drawing.Point(138, 76);
-            this.rdio_LeftClick.Name = "rdio_LeftClick";
-            this.rdio_LeftClick.Size = new System.Drawing.Size(69, 17);
-            this.rdio_LeftClick.TabIndex = 7;
-            this.rdio_LeftClick.Text = "Left Click";
-            this.rdio_LeftClick.UseVisualStyleBackColor = true;
-            // 
-            // rdio_RightClick
-            // 
-            this.rdio_RightClick.AutoSize = true;
-            this.rdio_RightClick.Checked = true;
-            this.rdio_RightClick.Location = new System.Drawing.Point(49, 76);
-            this.rdio_RightClick.Name = "rdio_RightClick";
-            this.rdio_RightClick.Size = new System.Drawing.Size(76, 17);
-            this.rdio_RightClick.TabIndex = 6;
-            this.rdio_RightClick.TabStop = true;
-            this.rdio_RightClick.Text = "Right Click";
-            this.rdio_RightClick.UseVisualStyleBackColor = true;
-            // 
-            // chkHold
-            // 
-            this.chkHold.AutoSize = true;
-            this.chkHold.Location = new System.Drawing.Point(27, 104);
-            this.chkHold.Name = "chkHold";
-            this.chkHold.Size = new System.Drawing.Size(197, 17);
-            this.chkHold.TabIndex = 8;
-            this.chkHold.Text = "Hold Click Button Down (For Mining)";
-            this.chkHold.UseVisualStyleBackColor = true;
-            // 
-            // userInput1
-            // 
-            this.userInput1.ButtonName = "Button name";
-            this.userInput1.Location = new System.Drawing.Point(296, 32);
-            this.userInput1.Name = "userInput1";
-            this.userInput1.Size = new System.Drawing.Size(317, 161);
-            this.userInput1.TabIndex = 9;
+            this.biRightMouse.Location = new System.Drawing.Point(258, 18);
+            this.biRightMouse.Name = "biRightMouse";
+            this.biRightMouse.Size = new System.Drawing.Size(240, 130);
+            this.biRightMouse.TabIndex = 5;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(664, 403);
-            this.Controls.Add(this.userInput1);
-            this.Controls.Add(this.chkHold);
-            this.Controls.Add(this.rdio_LeftClick);
-            this.Controls.Add(this.rdio_RightClick);
-            this.Controls.Add(this.txtDelay);
-            this.Controls.Add(this.lbl_delay);
+            this.ClientSize = new System.Drawing.Size(518, 223);
+            this.Controls.Add(this.biRightMouse);
+            this.Controls.Add(this.biLeftMouse);
             this.Controls.Add(this.btn_stop);
             this.Controls.Add(this.lblstart_time);
-            this.Controls.Add(this.lbl_startText);
             this.Controls.Add(this.btn_start);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -163,15 +101,10 @@
         #endregion
 
         private System.Windows.Forms.Button btn_start;
-        private System.Windows.Forms.Label lbl_startText;
         private System.Windows.Forms.Label lblstart_time;
         private System.Windows.Forms.Button btn_stop;
-        private System.Windows.Forms.Label lbl_delay;
-        private System.Windows.Forms.TextBox txtDelay;
-        private System.Windows.Forms.RadioButton rdio_LeftClick;
-        private System.Windows.Forms.RadioButton rdio_RightClick;
-        private System.Windows.Forms.CheckBox chkHold;
-        private UserInput userInput1;
+        private ButtonInputs biLeftMouse;
+        private ButtonInputs biRightMouse;
     }
 }
 

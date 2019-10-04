@@ -1,6 +1,6 @@
 ﻿namespace AutoClicker
 {
-    partial class UserInput
+    partial class ButtonInputs
     {
         /// <summary> 
         /// Required designer variable.
@@ -37,9 +37,10 @@
             // 
             // cbButtonEnable
             // 
+            this.cbButtonEnable.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.cbButtonEnable.AutoSize = true;
             this.cbButtonEnable.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.cbButtonEnable.Location = new System.Drawing.Point(55, 29);
+            this.cbButtonEnable.Location = new System.Drawing.Point(18, 12);
             this.cbButtonEnable.Name = "cbButtonEnable";
             this.cbButtonEnable.Size = new System.Drawing.Size(107, 21);
             this.cbButtonEnable.TabIndex = 1;
@@ -49,10 +50,11 @@
             // 
             // cbHold
             // 
+            this.cbHold.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.cbHold.AutoSize = true;
             this.cbHold.Enabled = false;
             this.cbHold.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.cbHold.Location = new System.Drawing.Point(55, 65);
+            this.cbHold.Location = new System.Drawing.Point(18, 48);
             this.cbHold.Name = "cbHold";
             this.cbHold.Size = new System.Drawing.Size(100, 21);
             this.cbHold.TabIndex = 2;
@@ -62,9 +64,10 @@
             // 
             // lblDelay
             // 
+            this.lblDelay.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblDelay.AutoSize = true;
             this.lblDelay.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblDelay.Location = new System.Drawing.Point(56, 100);
+            this.lblDelay.Location = new System.Drawing.Point(19, 83);
             this.lblDelay.Name = "lblDelay";
             this.lblDelay.Size = new System.Drawing.Size(80, 17);
             this.lblDelay.TabIndex = 3;
@@ -72,9 +75,10 @@
             // 
             // numDelay
             // 
+            this.numDelay.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numDelay.Enabled = false;
             this.numDelay.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.numDelay.Location = new System.Drawing.Point(142, 100);
+            this.numDelay.Location = new System.Drawing.Point(105, 83);
             this.numDelay.Minimum = new decimal(new int[] {
             1,
             0,
@@ -98,7 +102,7 @@
             this.Controls.Add(this.cbHold);
             this.Controls.Add(this.cbButtonEnable);
             this.Name = "UserInput";
-            this.Size = new System.Drawing.Size(317, 161);
+            this.Size = new System.Drawing.Size(240, 130);
             ((System.ComponentModel.ISupportInitialize)(this.numDelay)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
