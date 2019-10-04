@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clicker.cs" />
     <Compile Include="Controls\ValueCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -62,6 +63,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserInput.Designer.cs">
+      <DependentUpon>UserInput.cs</DependentUpon>
+    </Compile>
     <Compile Include="Win32Api.cs" />
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
@@ -78,6 +85,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UserInput.resx">
+      <DependentUpon>UserInput.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

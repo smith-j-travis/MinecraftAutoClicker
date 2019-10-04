@@ -34,9 +34,10 @@
             this.btn_stop = new System.Windows.Forms.Button();
             this.lbl_delay = new System.Windows.Forms.Label();
             this.txtDelay = new System.Windows.Forms.TextBox();
-            this.rdio_RightClick = new System.Windows.Forms.RadioButton();
             this.rdio_LeftClick = new System.Windows.Forms.RadioButton();
+            this.rdio_RightClick = new System.Windows.Forms.RadioButton();
             this.chkHold = new System.Windows.Forms.CheckBox();
+            this.userInput1 = new AutoClicker.UserInput();
             this.SuspendLayout();
             // 
             // btn_start
@@ -54,7 +55,7 @@
             this.lbl_startText.AutoSize = true;
             this.lbl_startText.Location = new System.Drawing.Point(11, 18);
             this.lbl_startText.Name = "lbl_startText";
-            this.lbl_startText.Size = new System.Drawing.Size(85, 15);
+            this.lbl_startText.Size = new System.Drawing.Size(77, 13);
             this.lbl_startText.TabIndex = 1;
             this.lbl_startText.Text = "Started Action:";
             // 
@@ -63,7 +64,7 @@
             this.lblstart_time.AutoSize = true;
             this.lblstart_time.Location = new System.Drawing.Point(103, 18);
             this.lblstart_time.Name = "lblstart_time";
-            this.lblstart_time.Size = new System.Drawing.Size(0, 15);
+            this.lblstart_time.Size = new System.Drawing.Size(0, 13);
             this.lblstart_time.TabIndex = 2;
             // 
             // btn_stop
@@ -82,7 +83,7 @@
             this.lbl_delay.AutoSize = true;
             this.lbl_delay.Location = new System.Drawing.Point(31, 46);
             this.lbl_delay.Name = "lbl_delay";
-            this.lbl_delay.Size = new System.Drawing.Size(72, 15);
+            this.lbl_delay.Size = new System.Drawing.Size(62, 13);
             this.lbl_delay.TabIndex = 4;
             this.lbl_delay.Text = "Delay (ms): ";
             // 
@@ -94,43 +95,52 @@
             this.txtDelay.TabIndex = 5;
             this.txtDelay.Text = "300";
             // 
+            // rdio_LeftClick
+            // 
+            this.rdio_LeftClick.AutoSize = true;
+            this.rdio_LeftClick.Location = new System.Drawing.Point(138, 76);
+            this.rdio_LeftClick.Name = "rdio_LeftClick";
+            this.rdio_LeftClick.Size = new System.Drawing.Size(69, 17);
+            this.rdio_LeftClick.TabIndex = 7;
+            this.rdio_LeftClick.Text = "Left Click";
+            this.rdio_LeftClick.UseVisualStyleBackColor = true;
+            // 
             // rdio_RightClick
             // 
             this.rdio_RightClick.AutoSize = true;
             this.rdio_RightClick.Checked = true;
             this.rdio_RightClick.Location = new System.Drawing.Point(49, 76);
             this.rdio_RightClick.Name = "rdio_RightClick";
-            this.rdio_RightClick.Size = new System.Drawing.Size(83, 19);
+            this.rdio_RightClick.Size = new System.Drawing.Size(76, 17);
             this.rdio_RightClick.TabIndex = 6;
             this.rdio_RightClick.TabStop = true;
             this.rdio_RightClick.Text = "Right Click";
             this.rdio_RightClick.UseVisualStyleBackColor = true;
-            // 
-            // rdio_LeftClick
-            // 
-            this.rdio_LeftClick.AutoSize = true;
-            this.rdio_LeftClick.Location = new System.Drawing.Point(138, 76);
-            this.rdio_LeftClick.Name = "rdio_LeftClick";
-            this.rdio_LeftClick.Size = new System.Drawing.Size(74, 19);
-            this.rdio_LeftClick.TabIndex = 7;
-            this.rdio_LeftClick.Text = "Left Click";
-            this.rdio_LeftClick.UseVisualStyleBackColor = true;
             // 
             // chkHold
             // 
             this.chkHold.AutoSize = true;
             this.chkHold.Location = new System.Drawing.Point(27, 104);
             this.chkHold.Name = "chkHold";
-            this.chkHold.Size = new System.Drawing.Size(224, 19);
+            this.chkHold.Size = new System.Drawing.Size(197, 17);
             this.chkHold.TabIndex = 8;
             this.chkHold.Text = "Hold Click Button Down (For Mining)";
             this.chkHold.UseVisualStyleBackColor = true;
+            // 
+            // userInput1
+            // 
+            this.userInput1.ButtonName = "Button name";
+            this.userInput1.Location = new System.Drawing.Point(296, 32);
+            this.userInput1.Name = "userInput1";
+            this.userInput1.Size = new System.Drawing.Size(317, 161);
+            this.userInput1.TabIndex = 9;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(263, 196);
+            this.ClientSize = new System.Drawing.Size(664, 403);
+            this.Controls.Add(this.userInput1);
             this.Controls.Add(this.chkHold);
             this.Controls.Add(this.rdio_LeftClick);
             this.Controls.Add(this.rdio_RightClick);
@@ -158,9 +168,10 @@
         private System.Windows.Forms.Button btn_stop;
         private System.Windows.Forms.Label lbl_delay;
         private System.Windows.Forms.TextBox txtDelay;
-        private System.Windows.Forms.RadioButton rdio_RightClick;
         private System.Windows.Forms.RadioButton rdio_LeftClick;
+        private System.Windows.Forms.RadioButton rdio_RightClick;
         private System.Windows.Forms.CheckBox chkHold;
+        private UserInput userInput1;
     }
 }
 
