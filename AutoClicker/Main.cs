@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -11,7 +10,7 @@ namespace AutoClicker
 {
     public partial class Main : Form
     {
-        private Dictionary<Process, List<Clicker>> instanceClickers = new Dictionary<Process, List<Clicker>>();
+        private readonly Dictionary<Process, List<Clicker>> instanceClickers = new Dictionary<Process, List<Clicker>>();
 
         public Main()
         {
@@ -22,71 +21,84 @@ namespace AutoClicker
 
         private void Btn_action_Click(object sender, EventArgs e)
         {
-            EnableElements(false);
-            var mcProcesses = Process.GetProcessesByName("javaw").Where(b => b.MainWindowTitle.Contains("Minecraft")).ToList();
-            var mainHandle = Handle;
-
-            if (!mcProcesses.Any())
+            try
             {
-                MessageBox.Show(@"Minecraft is not running!", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                EnableElements(true);
-                return;
-            }
+                EnableElements(false);
+                var mcProcesses = Process.GetProcessesByName("javaw").Where(b => b.MainWindowTitle.Contains("Minecraft")).ToList();
+                var mainHandle = Handle;
 
-            if (mcProcesses.Count > 1)
-            {
-                var instancesForm = new MultipleInstances(mcProcesses);
-
-                if (instancesForm.ShowDialog() != DialogResult.OK)
+                if (!mcProcesses.Any())
+                {
+                    MessageBox.Show(@"Minecraft is not running!", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    EnableElements(true);
                     return;
+                }
 
-                mcProcesses = instancesForm.SelectedInstances.Select(Process.GetProcessById).ToList();
-            }
-
-            this.lblstart_time.Text = DateTime.Now.ToString("MMMM dd HH:mm tt");
-
-            foreach (var mcProcess in mcProcesses)
-            {
-                SetControlPropertyThreadSafe(this.btn_start, "Enabled", false);
-                SetControlPropertyThreadSafe(this.btn_stop, "Enabled", true);
-
-                var minecraftHandle = mcProcess.MainWindowHandle;
-                FocusToggle(minecraftHandle);
-
-                SetControlPropertyThreadSafe(this.btn_start, "Text", @"Starting in: ");
-                Thread.Sleep(500);
-
-                for (var i = 5; i > 0; i--)
+                if (mcProcesses.Count > 1)
                 {
-                    SetControlPropertyThreadSafe(this.btn_start, "Text", i.ToString());
+                    var instancesForm = new MultipleInstances(mcProcesses);
+
+                    if (instancesForm.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+
+                    mcProcesses = instancesForm.SelectedInstances.Select(Process.GetProcessById).ToList();
+                }
+
+                lblstart_time.Text = DateTime.Now.ToString("MMMM dd HH:mm tt");
+
+                foreach (var mcProcess in mcProcesses)
+                {
+                    SetControlPropertyThreadSafe(btn_start, "Enabled", false);
+                    SetControlPropertyThreadSafe(btn_stop, "Enabled", true);
+
+                    var minecraftHandle = mcProcess.MainWindowHandle;
+                    FocusToggle(minecraftHandle);
+
+                    SetControlPropertyThreadSafe(btn_start, "Text", @"Starting in: ");
                     Thread.Sleep(500);
+
+                    for (var i = 5; i > 0; i--)
+                    {
+                        SetControlPropertyThreadSafe(btn_start, "Text", i.ToString());
+                        Thread.Sleep(500);
+                    }
+
+                    FocusToggle(mainHandle);
+                    SetControlPropertyThreadSafe(btn_start, "Text", @"Running...");
+                    Thread.Sleep(500);
+
+                    //Right click needs to be ahead of left click for concrete mining
+                    if (biRightMouse.Needed)
+                    {
+                        var clicker = biRightMouse.StartClicking(minecraftHandle);
+                        AddToInstanceClickers(mcProcess, clicker);
+                    }
+
+                    /*
+                     * This sleep is needed, because if you want to mine concrete, then Minecraft starts to hold left click first
+                     * and it won't place the block in your second hand for some reason...
+                     */
+                    Thread.Sleep(100);
+
+                    if (biLeftMouse.Needed)
+                    {
+                        var clicker = biLeftMouse.StartClicking(minecraftHandle);
+                        AddToInstanceClickers(mcProcess, clicker);
+                    }
                 }
-
-                FocusToggle(mainHandle);
-                SetControlPropertyThreadSafe(this.btn_start, "Text", @"Running...");
-                Thread.Sleep(500);
-
-                if(biLeftMouse.Needed)
-                {
-                    var clicker = biLeftMouse.StartClicking(minecraftHandle);
-                    AddToInstanceClickers(mcProcess, clicker);
-                }
-
-                if(biRightMouse.Needed)
-                {
-                    var clicker = biRightMouse.StartClicking(minecraftHandle);
-                    AddToInstanceClickers(mcProcess, clicker);
-                }
-
-                Thread.Sleep(200);
-                FocusToggle(minecraftHandle);
-                FocusToggle(mainHandle);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "An error occured", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Stop();
             }
         }
 
         private void AddToInstanceClickers(Process mcProcess, Clicker clicker)
         {
-            if(instanceClickers.ContainsKey(mcProcess))
+            if (instanceClickers.ContainsKey(mcProcess))
             {
                 instanceClickers[mcProcess].Add(clicker);
             }
@@ -98,13 +110,18 @@ namespace AutoClicker
 
         private void Btn_stop_Click(object sender, EventArgs e)
         {
-            this.btn_stop.Enabled = false;
+            Stop();
+        }
 
-            foreach(var clickers in instanceClickers.Values)
+        private void Stop()
+        {
+            btn_stop.Enabled = false;
+
+            foreach (var clickers in instanceClickers.Values)
             {
-                foreach(var clicker in clickers)
+                foreach (var clicker in clickers)
                 {
-                    clicker.Dispose();
+                    clicker?.Dispose();
                 }
             }
             instanceClickers.Clear();
@@ -131,9 +148,13 @@ namespace AutoClicker
         public static void SetControlPropertyThreadSafe(Control control, string propertyName, object propertyValue)
         {
             if (control.InvokeRequired)
+            {
                 control.Invoke(new SetControlPropertyThreadSafeDelegate(SetControlPropertyThreadSafe), control, propertyName, propertyValue);
+            }
             else
+            {
                 control.GetType().InvokeMember(propertyName, BindingFlags.SetProperty, null, control, new[] { propertyValue });
+            }
         }//end SetControlPropertyThreadSafe
     }
 }
