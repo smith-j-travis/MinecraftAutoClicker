@@ -11,6 +11,7 @@ namespace AutoClicker
         private readonly Timer timer;
 
         private bool hold = false;
+        private bool disposed;
 
         public Clicker(uint buttonDownCode, uint buttonUpCode, IntPtr minecraftHandle)
         {
@@ -55,16 +56,41 @@ namespace AutoClicker
             Click();
         }
 
-        public void Dispose()
-        {
-            Stop();
-            timer.Dispose();
-        }
-
         private void Click()
         {
             Win32Api.PostMessage(minecraftHandle, buttonDownCode, IntPtr.Zero, IntPtr.Zero);
             Win32Api.PostMessage(minecraftHandle, buttonUpCode, IntPtr.Zero, IntPtr.Zero);
         }
+
+        #region Dispose
+        public void Dispose()
+        {
+            // Dispose of unmanaged resources.
+            Dispose(true);
+            // Suppress finalization.
+            GC.SuppressFinalize(this);
+        }
+
+        protected void Dispose(bool disposing)
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                Stop();
+                timer.Dispose();
+            }
+
+            disposed = true;
+        }
+
+        ~Clicker()
+        {
+            Dispose(false);
+        }
+        #endregion
     }
 }

@@ -36,17 +36,20 @@ namespace AutoClicker
 
                 if (mcProcesses.Count > 1)
                 {
-                    var instancesForm = new MultipleInstances(mcProcesses);
-
-                    if (instancesForm.ShowDialog() != DialogResult.OK)
+                    using (var instancesForm = new MultipleInstances(mcProcesses))
                     {
-                        return;
-                    }
+                        if (instancesForm.ShowDialog() != DialogResult.OK)
+                        {
+                            return;
+                        }
 
-                    mcProcesses = instancesForm.SelectedInstances.Select(Process.GetProcessById).ToList();
+                        mcProcesses = instancesForm.SelectedInstances.Select(Process.GetProcessById).ToList();
+                    }
                 }
 
-                lblstart_time.Text = DateTime.Now.ToString("MMMM dd HH:mm tt");
+                lblStartTime.Text = DateTime.Now.ToString("MMMM dd HH:mm tt");
+                lblStarted.Visible = true;
+                lblStartTime.Visible = true;
 
                 foreach (var mcProcess in mcProcesses)
                 {
@@ -125,6 +128,9 @@ namespace AutoClicker
                 }
             }
             instanceClickers.Clear();
+
+            lblStarted.Visible = false;
+            lblStartTime.Visible = false;
 
             btn_start.Text = "START";
             EnableElements(true);

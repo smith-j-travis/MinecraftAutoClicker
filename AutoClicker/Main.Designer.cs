@@ -29,10 +29,11 @@
         private void InitializeComponent()
         {
             this.btn_start = new System.Windows.Forms.Button();
-            this.lblstart_time = new System.Windows.Forms.Label();
+            this.lblStartTime = new System.Windows.Forms.Label();
             this.btn_stop = new System.Windows.Forms.Button();
             this.biLeftMouse = new AutoClicker.ButtonInputs();
             this.biRightMouse = new AutoClicker.ButtonInputs();
+            this.lblStarted = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btn_start
@@ -45,13 +46,16 @@
             this.btn_start.UseVisualStyleBackColor = true;
             this.btn_start.Click += new System.EventHandler(this.Btn_action_Click);
             // 
-            // lblstart_time
+            // lblStartTime
             // 
-            this.lblstart_time.AutoSize = true;
-            this.lblstart_time.Location = new System.Drawing.Point(103, 18);
-            this.lblstart_time.Name = "lblstart_time";
-            this.lblstart_time.Size = new System.Drawing.Size(0, 13);
-            this.lblstart_time.TabIndex = 2;
+            this.lblStartTime.AutoSize = true;
+            this.lblStartTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lblStartTime.Location = new System.Drawing.Point(233, 222);
+            this.lblStartTime.Name = "lblStartTime";
+            this.lblStartTime.Size = new System.Drawing.Size(34, 17);
+            this.lblStartTime.TabIndex = 2;
+            this.lblStartTime.Text = "time";
+            this.lblStartTime.Visible = false;
             // 
             // btn_stop
             // 
@@ -78,15 +82,27 @@
             this.biRightMouse.Size = new System.Drawing.Size(240, 130);
             this.biRightMouse.TabIndex = 5;
             // 
+            // lblStarted
+            // 
+            this.lblStarted.AutoSize = true;
+            this.lblStarted.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.lblStarted.Location = new System.Drawing.Point(162, 222);
+            this.lblStarted.Name = "lblStarted";
+            this.lblStarted.Size = new System.Drawing.Size(74, 17);
+            this.lblStarted.TabIndex = 6;
+            this.lblStarted.Text = "Started at:";
+            this.lblStarted.Visible = false;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(518, 223);
+            this.ClientSize = new System.Drawing.Size(518, 250);
+            this.Controls.Add(this.lblStarted);
             this.Controls.Add(this.biRightMouse);
             this.Controls.Add(this.biLeftMouse);
             this.Controls.Add(this.btn_stop);
-            this.Controls.Add(this.lblstart_time);
+            this.Controls.Add(this.lblStartTime);
             this.Controls.Add(this.btn_start);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -101,10 +117,11 @@
         #endregion
 
         private System.Windows.Forms.Button btn_start;
-        private System.Windows.Forms.Label lblstart_time;
+        private System.Windows.Forms.Label lblStartTime;
         private System.Windows.Forms.Button btn_stop;
         private ButtonInputs biLeftMouse;
         private ButtonInputs biRightMouse;
+        private System.Windows.Forms.Label lblStarted;
     }
 }
 
