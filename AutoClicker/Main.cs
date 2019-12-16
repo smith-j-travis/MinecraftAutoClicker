@@ -22,7 +22,7 @@ namespace AutoClicker
             try
             {
                 EnableElements(false);
-                var mcProcesses = Process.GetProcessesByName("javaw").Where(b => b.MainWindowTitle.Contains("Minecraft")).ToList();
+                var mcProcesses = Process.GetProcesses().Where(b => b.ProcessName.StartsWith("java") && b.MainWindowTitle.Contains("Minecraft")).ToList();
                 var mainHandle = Handle;
 
                 if (!mcProcesses.Any())
