@@ -14,7 +14,7 @@ namespace AutoClicker
         [DllImport("user32.dll")]
         internal static extern bool ShowWindow(IntPtr hWnd, int nCmdShow); //ShowWindow needs an IntPtr
 
-        public static int WmRbuttonDown => 0x0204;
-        public static int WmLbuttonDown => 0x201;
+        public static uint WmRbuttonDown => 0x0204;
+        public static uint WmLbuttonDown => 0x201;
     }
 }
