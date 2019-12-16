@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace AutoClicker
@@ -8,38 +7,25 @@ namespace AutoClicker
     {
         private uint buttonDownCode;
         private uint buttonUpCode;
-        private bool initialized = false;
 
         public bool Needed => cbButtonEnable.Checked;
 
-        public ButtonInputs()
+        public ButtonInputs(string buttonName, uint buttonDownCode, uint buttonUpCode)
         {
             InitializeComponent();
-            numDelay.Maximum = int.MaxValue;
-        }
-
-        public void Init(string buttonName, uint buttonDownCode, uint buttonUpCode)
-        {
-            //if(initialized)
-            //{
-            //    throw new Exception($"{nameof(ButtonInputs)}.{cbButtonEnable.Text} is already initialized!");
-            //}
 
             this.buttonDownCode = buttonDownCode;
             this.buttonUpCode = buttonUpCode;
             cbButtonEnable.Text = buttonName;
-            initialized = true;
+            numDelay.Maximum = int.MaxValue;
+            numDelay.Value = 200;
         }
 
         internal Clicker StartClicking(IntPtr minecraftHandle)
         {
-            if (!initialized)
-            {
-                throw new Exception($"{nameof(ButtonInputs)}.{cbButtonEnable.Text} is not initialized!");
-            }
-            int delay = cbHold.Checked ? 0 : (int)numDelay.Value;
-
+            var delay = cbHold.Checked ? 0 : (int)numDelay.Value;
             var clicker = new Clicker(buttonDownCode, buttonUpCode, minecraftHandle);
+
             clicker.Start(delay);
 
             return clicker;
@@ -66,14 +52,7 @@ namespace AutoClicker
 
         private void HoldCheckBoxClicked()
         {
-            if (cbHold.Checked)
-            {
-                numDelay.Enabled = false;
-            }
-            else
-            {
-                numDelay.Enabled = true;
-            }
+            numDelay.Enabled = !cbHold.Checked;
         }
     }
 }

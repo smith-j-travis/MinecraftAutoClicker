@@ -31,8 +31,8 @@
             this.btn_start = new System.Windows.Forms.Button();
             this.lblStartTime = new System.Windows.Forms.Label();
             this.btn_stop = new System.Windows.Forms.Button();
-            this.biLeftMouse = new AutoClicker.ButtonInputs();
-            this.biRightMouse = new AutoClicker.ButtonInputs();
+            this.biLeftMouse = new AutoClicker.ButtonInputs("Left mouse button", Win32Api.WmLbuttonDown, Win32Api.WmLbuttonDown + 1);
+            this.biRightMouse = new AutoClicker.ButtonInputs("Right mouse button", Win32Api.WmRbuttonDown, Win32Api.WmRbuttonDown + 1);
             this.lblStarted = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 

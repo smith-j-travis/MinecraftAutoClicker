@@ -15,8 +15,6 @@ namespace AutoClicker
         public Main()
         {
             InitializeComponent();
-            biLeftMouse.Init("Left mouse button", Win32Api.WmLbuttonDown, Win32Api.WmLbuttonDown + 1);
-            biRightMouse.Init("Right mouse button", Win32Api.WmRbuttonDown, Win32Api.WmRbuttonDown + 1);
         }
 
         private void Btn_action_Click(object sender, EventArgs e)
@@ -39,9 +37,7 @@ namespace AutoClicker
                     using (var instancesForm = new MultipleInstances(mcProcesses))
                     {
                         if (instancesForm.ShowDialog() != DialogResult.OK)
-                        {
                             return;
-                        }
 
                         mcProcesses = instancesForm.SelectedInstances.Select(Process.GetProcessById).ToList();
                     }
@@ -102,13 +98,9 @@ namespace AutoClicker
         private void AddToInstanceClickers(Process mcProcess, Clicker clicker)
         {
             if (instanceClickers.ContainsKey(mcProcess))
-            {
                 instanceClickers[mcProcess].Add(clicker);
-            }
             else
-            {
-                instanceClickers.Add(mcProcess, new List<Clicker>() { clicker });
-            }
+                instanceClickers.Add(mcProcess, new List<Clicker> { clicker });
         }
 
         private void Btn_stop_Click(object sender, EventArgs e)
@@ -127,6 +119,7 @@ namespace AutoClicker
                     clicker?.Dispose();
                 }
             }
+
             instanceClickers.Clear();
 
             lblStarted.Visible = false;
@@ -154,13 +147,9 @@ namespace AutoClicker
         public static void SetControlPropertyThreadSafe(Control control, string propertyName, object propertyValue)
         {
             if (control.InvokeRequired)
-            {
                 control.Invoke(new SetControlPropertyThreadSafeDelegate(SetControlPropertyThreadSafe), control, propertyName, propertyValue);
-            }
             else
-            {
                 control.GetType().InvokeMember(propertyName, BindingFlags.SetProperty, null, control, new[] { propertyValue });
-            }
         }//end SetControlPropertyThreadSafe
     }
 }
