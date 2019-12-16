@@ -37,7 +37,10 @@ namespace AutoClicker
                     using (var instancesForm = new MultipleInstances(mcProcesses))
                     {
                         if (instancesForm.ShowDialog() != DialogResult.OK)
+                        {
+                            EnableElements(true);
                             return;
+                        }   
 
                         mcProcesses = instancesForm.SelectedInstances.Select(Process.GetProcessById).ToList();
                     }
