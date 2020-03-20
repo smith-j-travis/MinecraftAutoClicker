@@ -11,6 +11,11 @@ namespace AutoClicker
     public partial class Main : Form
     {
         private readonly Dictionary<Process, List<Clicker>> instanceClickers = new Dictionary<Process, List<Clicker>>();
+        private static readonly List<string> WindowTitles = new List<string>
+        {
+            "Minecraft",
+            "RLCraft"
+        };
 
         public Main()
         {
@@ -22,7 +27,7 @@ namespace AutoClicker
             try
             {
                 EnableElements(false);
-                var mcProcesses = Process.GetProcesses().Where(b => b.ProcessName.StartsWith("java") && b.MainWindowTitle.Contains("Minecraft")).ToList();
+                var mcProcesses = Process.GetProcesses().Where(b => b.ProcessName.StartsWith("java") && WindowTitles.Any(title => b.MainWindowTitle.Contains(title))).ToList();
                 var mainHandle = Handle;
 
                 if (!mcProcesses.Any())
