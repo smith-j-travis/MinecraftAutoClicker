@@ -32,7 +32,21 @@ namespace AutoClicker
 
                 if (!mcProcesses.Any())
                 {
-                    MessageBox.Show(@"Minecraft is not running!", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // if we first don't find any windows matching an expected name, give the user the ability to override
+                    var notRunning = new NotRunning();
+                    if (notRunning.ShowDialog() != DialogResult.OK)
+                    {
+                        EnableElements(true);
+                        return;
+                    }
+
+                    if(!string.IsNullOrEmpty(notRunning.ProcessTitle))
+                        mcProcesses = Process.GetProcesses().Where(b => b.MainWindowTitle == notRunning.ProcessTitle).ToList();
+                }
+
+                if (!mcProcesses.Any())
+                {
+                    MessageBox.Show(@"Unable to find Minecraft process!", @"Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     EnableElements(true);
                     return;
                 }
