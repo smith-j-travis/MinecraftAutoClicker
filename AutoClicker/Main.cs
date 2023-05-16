@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AutoClicker
@@ -22,7 +23,7 @@ namespace AutoClicker
             InitializeComponent();
         }
 
-        private void Btn_action_Click(object sender, EventArgs e)
+        private async void Btn_action_Click(object sender, EventArgs e)
         {
             try
             {
@@ -68,29 +69,15 @@ namespace AutoClicker
                 lblStartTime.Text = DateTime.Now.ToString("MMMM dd HH:mm tt");
                 lblStarted.Visible = true;
                 lblStartTime.Visible = true;
-
+                
                 foreach (var mcProcess in mcProcesses)
                 {
-                    SetControlPropertyThreadSafe(btn_start, "Enabled", false);
-                    SetControlPropertyThreadSafe(btn_stop, "Enabled", true);
-
                     var minecraftHandle = mcProcess.MainWindowHandle;
                     FocusToggle(minecraftHandle);
 
-                    SetControlPropertyThreadSafe(btn_start, "Text", @"Starting in: ");
-                    Thread.Sleep(500);
+                    await Task.Run(() => CountDown(mainHandle));
 
-                    for (var i = 5; i > 0; i--)
-                    {
-                        SetControlPropertyThreadSafe(btn_start, "Text", i.ToString());
-                        Thread.Sleep(500);
-                    }
-
-                    FocusToggle(mainHandle);
-                    SetControlPropertyThreadSafe(btn_start, "Text", @"Running...");
-                    Thread.Sleep(500);
-
-                    //Right click needs to be ahead of left click for concrete mining
+                    // Right click needs to be ahead of left click for concrete mining
                     if (biRightMouse.Needed)
                     {
                         var clicker = biRightMouse.StartClicking(minecraftHandle);
@@ -115,6 +102,22 @@ namespace AutoClicker
                 MessageBox.Show(ex.Message, "An error occured", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Stop();
             }
+        }
+
+        private void CountDown(IntPtr mainHandle)
+        {
+            SetControlPropertyThreadSafe(btn_start, "Text", @"Starting in: ");
+            Thread.Sleep(750);
+
+            for (var i = 5; i > 0; i--)
+            {
+                SetControlPropertyThreadSafe(btn_start, "Text", i.ToString());
+                Thread.Sleep(750);
+            }
+
+            FocusToggle(mainHandle);
+            SetControlPropertyThreadSafe(btn_start, "Text", @"Running...");
+            Thread.Sleep(750);
         }
 
         private void AddToInstanceClickers(Process mcProcess, Clicker clicker)

@@ -16,10 +16,10 @@ namespace AutoClicker
         {
             InitializeComponent();
 
-            this.SelectedInstances = new List<int>();
+            SelectedInstances = new List<int>();
             const int x = 25;
             var y = 20;
-            var buttonX = this.grpInstances.Location.X + this.grpInstances.Width - 100;
+            var buttonX = grpInstances.Location.X + grpInstances.Width - 100;
             var processCount = 0;
 
             foreach (var process in foundProcesses)
@@ -40,8 +40,8 @@ namespace AutoClicker
 
                 button.Click += (sender, e) => { Win32Api.SetForegroundWindow(process.MainWindowHandle); };
 
-                this.grpInstances.Controls.Add(checkbox);
-                this.grpInstances.Controls.Add(button);
+                grpInstances.Controls.Add(checkbox);
+                grpInstances.Controls.Add(button);
 
                 y += 25;
                 processCount++;
@@ -51,7 +51,7 @@ namespace AutoClicker
 
         private void Btn_ok_Click(object sender, EventArgs e)
         {
-            var selectedInstances = this.grpInstances.AllControls<ValueCheckBox>().Where(b => b.Checked).ToList();
+            var selectedInstances = grpInstances.AllControls<ValueCheckBox>().Where(b => b.Checked).ToList();
 
             if (!selectedInstances.Any())
             {
@@ -60,20 +60,20 @@ namespace AutoClicker
             }
 
             foreach (var instance in selectedInstances)
-                this.SelectedInstances.Add(int.Parse(instance.Value));
+                SelectedInstances.Add(int.Parse(instance.Value));
 
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void AdjustForm(int processCount)
         {
             if (processCount > 4)
             {
-                this.grpInstances.Height += 25;
-                this.Height += 25;
-                this.btn_cancel.Location = new Point(this.btn_cancel.Location.X, this.btn_cancel.Location.Y + 25);
-                this.btn_ok.Location = new Point(this.btn_ok.Location.X, this.btn_ok.Location.Y + 25);
+                grpInstances.Height += 25;
+                Height += 25;
+                btn_cancel.Location = new Point(btn_cancel.Location.X, btn_cancel.Location.Y + 25);
+                btn_ok.Location = new Point(btn_ok.Location.X, btn_ok.Location.Y + 25);
             }
         }
     }
