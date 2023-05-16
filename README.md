@@ -23,7 +23,7 @@ When you want to stop, click "Stop" and it will stop the action.
 
 或者
 * 在资源管理器的地址栏中输入`%appdata%\\.minecraft`
-* 打开`options.txt`，将`pauseOnLostFocus`设置为`fasle`
+* 打开`options.txt`，将`pauseOnLostFocus`设置为`false`
 
 使用指南（以后台挂机钓鱼为例，与原文有所不同）：
 
