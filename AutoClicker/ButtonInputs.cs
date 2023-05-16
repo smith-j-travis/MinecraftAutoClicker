@@ -5,8 +5,8 @@ namespace AutoClicker
 {
     public partial class ButtonInputs : UserControl
     {
-        private readonly uint _buttonDownCode;
-        private readonly uint _buttonUpCode;
+        private readonly uint buttonDownCode;
+        private readonly uint buttonUpCode;
 
         public bool Needed => cbButtonEnable.Checked;
 
@@ -14,8 +14,8 @@ namespace AutoClicker
         {
             InitializeComponent();
 
-            this._buttonDownCode = buttonDownCode;
-            this._buttonUpCode = buttonUpCode;
+            this.buttonDownCode = buttonDownCode;
+            this.buttonUpCode = buttonUpCode;
             cbButtonEnable.Text = buttonName;
             numDelay.Maximum = int.MaxValue;
             numDelay.Value = 200;
@@ -23,10 +23,10 @@ namespace AutoClicker
 
         internal Clicker StartClicking(IntPtr minecraftHandle)
         {
-            var delay = cbHold.Checked ? 0 : (int)numDelay.Value;
-            var clicker = new Clicker(this._buttonDownCode, this._buttonUpCode, minecraftHandle);
+            var delay = (int)numDelay.Value;
+            var clicker = new Clicker(buttonDownCode, buttonUpCode, minecraftHandle);
 
-            clicker.Start(delay);
+            clicker.Start(delay, cbHold.Checked);
 
             return clicker;
         }

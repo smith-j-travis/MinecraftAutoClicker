@@ -25,17 +25,28 @@ namespace AutoClicker
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            Click();
+            // keep sending hold every tick as well in case they do something to interrupt the input
+            if(hold)
+            {
+                Hold();
+            } else
+            {
+                Click();
+            }
         }
 
-        public void Start(int delay)
+        public void Start(int delay, bool hold)
         {
+            this.hold = hold;
             Stop();
-            hold = (delay == 0);
 
             if (hold)
-                //Select the minecraft handle with Alt+Tab to not stop holding (when using the program)
-                Win32Api.PostMessage(minecraftHandle, buttonDownCode, (IntPtr)0x0001, IntPtr.Zero);
+            {
+                Hold();
+                timer.Interval = delay;
+                timer.Start();
+
+            }
             else
             {
                 Click();
@@ -50,6 +61,11 @@ namespace AutoClicker
                 timer.Stop();
 
             Click();
+        }
+
+        private void Hold()
+        {
+            Win32Api.PostMessage(minecraftHandle, buttonDownCode, IntPtr.Zero, IntPtr.Zero);
         }
 
         private void Click()
